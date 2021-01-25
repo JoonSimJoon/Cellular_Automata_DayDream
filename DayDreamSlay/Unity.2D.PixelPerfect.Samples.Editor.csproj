@@ -250,10 +250,10 @@
  <HintPath>C:/Program Files/2019.4.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="nunit.framework">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/PackageCache/com.unity.ext.nunit@1.0.5/net35/unity-custom/nunit.framework.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/PackageCache/com.unity.ext.nunit@1.0.5/net35/unity-custom/nunit.framework.dll</HintPath>
  </Reference>
  <Reference Include="ICSharpCode.NRefactory">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/PackageCache/com.unity.render-pipelines.core@7.3.1/Editor/ShaderGenerator/ICSharpCode.NRefactory.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/PackageCache/com.unity.render-pipelines.core@7.3.1/Editor/ShaderGenerator/ICSharpCode.NRefactory.dll</HintPath>
  </Reference>
  <Reference Include="mscorlib">
  <HintPath>C:/Program Files/2019.4.17f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -610,16 +610,16 @@
  <HintPath>C:/Program Files/2019.4.17f1/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/Boo.Lang.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.TestRunner">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.TestRunner">
- <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay/DayDreamSlay/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
+ <HintPath>C:/Users/wesle/5lues/선린 205/알고리즘반/방프/unity game/DayDreamSlay_BSP/DayDreamSlay/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

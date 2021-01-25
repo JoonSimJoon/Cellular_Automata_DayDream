@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
+struct Node
+{
+    public int x, y;
+   // public int X { get => x; set => x = value; }
+   // public int Y { get => y; set => y = value; }
+}
 public class MapCreate : MonoBehaviour
 {
     public int mapX;
@@ -26,9 +31,9 @@ public class MapCreate : MonoBehaviour
     int componentcnt = 0;
     public  List<Vector2Int> v = new List<Vector2Int>();
     Queue<Vector2Int> q = new Queue<Vector2Int>();
-
+    
     public int[,] Arr { get => arr; set => arr = value; }
-
+    public int[,] Copy { get => arr; set => arr = value; }
     // Start is called before the first frame update
     void Awake()
     {
@@ -38,234 +43,89 @@ public class MapCreate : MonoBehaviour
     public void CreateMap()
     {
         Arr = new int[mapX, mapY];
+        Copy = new int[mapX, mapY];
         for (int i = 0; i < mapX; i++)
         {
             for (int j = 0; j < mapY; j++)
             {
-                Arr[i, j] = 1;
+                Arr[i, j] = 1; //1이 빈공간, 0이 벽인듯
                 if (i == 0 || j == 0 || i == mapX - 1 || j == mapY - 1)
                 {
                     Arr[i, j] = 0;
                 }
             }
         }
-        CreateWall();
-        DyedWall();
-        CCC();
-        Connect1();
-        DyedWall();
+        Node a;
+        a.x = 0;
+        a.y = 0;
+        Node b;
+        b.x = mapX - 1;
+        b.y = mapY - 1;
+        BSP(a, b);
         SquareWall();
         DrawTile();
         PlayerInstantiate();
         //SpawnMonster();
     }
 
-
-    void CreateWall()
+    void BSP(Node st,Node en)
     {
-        for (int i = 0; i < mapX * mapY / 100 * 60; i++)
+        if ((en.x - st.x) * (en.y - st.y) <= 1000)
         {
-            while (true)
+            return;
+        }
+        else
+        {
+            Node mid;
+            mid.x = (st.x + en.x) / 2;
+            mid.y = (st.y + en.y) / 2;
+            Node nd1, nd2;
+            int random = UnityEngine.Random.Range(0,5);
+            for(int i = st.x; i <= en.x; i++)
             {
-                
-                int x = UnityEngine.Random.Range(1, mapX); int y = UnityEngine.Random.Range(1, mapY);
-                if (Arr[x, y] == 1)
+                for(int j = st.y; j <= en.y; j++)
                 {
-                    Debug.Log(x + " " + y);
-                    Arr[x, y] = 0;
-                    break;
+                    if (i == st.x || i == en.x||j==st.y||j==en.y) Arr[i, j] = 0;
+                    //Arr[i, j] = 1; 
                 }
+            }
+            if (en.y - st.y > en.x- st.x)
+            {
+                mid.y = mid.y + random - 2;
+                for(int i = st.x; i <= en.x; i++)
+                {
+                    Arr[i,mid.y] = 0;
+                }
+                nd1 = st;
+                nd2.x = en.x;
+                nd2.y = mid.y;
+                BSP(nd1, nd2);
+                nd1.x = st.x;
+                nd1.y = mid.y;
+                nd2 =en;
+                BSP(nd1, nd2);
 
             }
+            else
+            {
+                mid.x = mid.x + random - 2;
+                for (int i = st.y; i <= en.y; i++)
+                {
+                    Arr[mid.x,i] = 0;
+                }
+                nd1 = st;
+                nd2.x = mid.x;
+                nd2.y = en.y;
+                BSP(nd1, nd2);
+                nd1.x = mid.x;
+                nd1.y = st.y;
+                nd2 = en;
+                BSP(nd1, nd2);
+            }
         }
+        return;
     }
 
-    void DyedWall()
-    {
-        int[] dx = { 1, 1, 1, 0, 0, 0, -1, -1, -1 };
-        int[] dy = { 1, 0, -1, 1, 0, -1, 1, 0, -1 };
-        int z_cnt = 0;
-        for (int i = 1; i < mapX - 1; i++)
-        {
-            for (int j = 1; j < mapY - 1; j++)
-            {
-                z_cnt = 0;
-                for (int xcnt = 0; xcnt < 9; xcnt++)
-                {
-                    if (Arr[i + dx[xcnt], j + dy[xcnt]] == 0) z_cnt++;
-                }
-                if (z_cnt > 4)
-                {
-                    Arr[i, j] = 0;
-                }
-
-                else
-                {
-                    if(Arr[i, j] == 99)
-                    { }
-                    else
-                    {
-                        Arr[i, j] = 1;
-                    }
-                    Debug.Log(i + " " + j);
-                }
-            }
-        }
-    }
-
-    void CCC()
-    {
-        Vector2Int nd = new Vector2Int(); ;
-        
-        for (int j = 0; j < mapY; j++)
-            {
-            for (int i = 0; i < mapX; i++)
-            {
-                if (Arr[i, j] == 1)
-                {
-                    Debug.Log("CCC");
-                    BFS(i, j);
-                    nd.x = i;
-                    nd.y = j;
-                    v.Add(nd);
-                }
-
-            }
-        }
-    }
-
-    void BFS(int x, int y)
-    {
-        Vector2Int now = new Vector2Int();
-        Vector2Int next = new Vector2Int();
-        int[] dx = { 1, -1, 0, 0 };
-        int[] dy = { 0, 0, 1, -1 };
-        now.x = x;
-        now.y = y;
-        q.Enqueue(now);
-        //printf("%d %d", x, y);
-        while (q.Count != 0)
-        {
-            now = q.Peek();
-            q.Dequeue();
-            Arr[(int)now.x, (int)now.y] = componentcnt + 2;
-            for (int i = 0; i < 4; i++)
-            {
-                next.x = now.x + dx[i];
-                next.y = now.y + dy[i];
-                if (next.x > 0 && next.x < mapX && next.y >= 0 && next.y < mapY && Arr[(int)next.x, (int)next.y] == 1)
-                {
-                    q.Enqueue(next);
-                    Arr[(int)next.x, (int)next.y] = componentcnt + 2;
-                    Debug.Log(Arr[(int)next.x, (int)next.y]);
-                }
-            }
-        }
-        componentcnt++;
-    }
-
-    void Connect1()
-    {
-        int vl = v.Count;
-        Vector2Int st, en;
-        int len, dx, dy;
-        for (int tt = 0; tt < Mathf.Min(3, vl); tt++)
-        {
-           if (tt + 1 >= vl)
-                break;
-            st = v[tt];
-            en = v[tt + 1];
-            len =Mathf.Abs(st.x - en.x) + Mathf.Abs(st.y - en.y);
-            if (en.x - st.x < 0) dx = -1;
-            else if (en.x - st.x > 0) dx = 1;
-            else dx = 0;
-            if (en.y - st.y < 0) dy = -1;
-            else if (en.y - st.y > 0) dy = 1;
-            else dy = 0;
-            for (int i = 0; i < len + 2; i++)
-            {
-                if (st.y == en.y && i < len)
-                {
-                    st.x += dx;
-                }
-                else if (st.x == en.x && i < len)
-                {
-                    st.y += dy; 
-                }
-                else if (UnityEngine.Random.Range(0, 2) == 1)
-                {
-                    st.x += dx;
-                }
-                else
-                {
-                    st.y += dy;
-                }
-                if (st.x > 0 && st.y > 0 && st.x < mapX - 1 && st.y < mapY - 1)
-                {
-                    Debug.Log(tt + 2 + "St : " + st);
-                    Arr[st.x, st.y] = tt + 2;
-                    if (st.x + 1 != mapX && st.y + 1 != mapY && st.y - 1 != 0)
-                    {
-                            Arr[st.x + 1, st.y] = 1;
-                            Arr[st.x, st.y + 1] = 1;
-                            Arr[st.x, st.y - 1] = 1;
-                        Debug.Log("AY!");
-                    }
-                }
-                else
-                    break;
-            }
-        }
-
-        for (int tt = 0; tt < vl - 3; tt++)
-        {
-           if (tt + 3 >= vl)
-                break;
-            st = v[tt];
-            en = v[tt + 3];
-            len = Mathf.Abs(st.x - en.x) + Mathf.Abs(st.y - en.y);
-            if (en.x - st.x < 0) dx = -1;
-            else if (en.x - st.x > 0) dx = 1;
-            else dx = 0;
-            if (en.y - st.y < 0) dy = -1;
-            else if (en.y - st.y > 0) dy = 1;
-            else dy = 0;
-            for (int i = 0; i < len + 2; i++)
-            {
-                if (st.y == en.y && i < len)
-                {
-                    st.x += dx;
-                }
-                else if (st.x == en.x && i < len)
-                {
-                    st.y += dy; 
-                }
-                else if (UnityEngine.Random.Range(0, 2) == 1)
-                {
-                    st.x += dx;
-                }
-                else
-                {
-                    st.y += dy; 
-                }
-                if (st.x > 0 && st.y > 0 && st.x < mapX-1 && st.y < mapY-1)
-                {
-                    Debug.Log(tt+2+"St : " + st);
-                    Arr[st.x, st.y] = tt + 2;
-                    if (st.x + 1 != mapX && st.y + 1 != mapY && st.y - 1 != 0)
-                    {
-                        Arr[st.x + 1, st.y] = 1;
-                        Arr[st.x, st.y + 1] = 1;
-                        Arr[st.x, st.y - 1] = 1;
-
-                        Debug.Log("AY!");
-                    }
-                }
-                else
-                    break;
-            }
-        }
-    }
    
 
     void DrawTile()
