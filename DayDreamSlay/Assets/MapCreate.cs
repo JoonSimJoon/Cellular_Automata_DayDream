@@ -70,8 +70,9 @@ public class MapCreate : MonoBehaviour
 
     void BSP(Node st,Node en)
     {
-        if ((en.x - st.x) * (en.y - st.y) <= 1000)
+        if ((en.x - st.x) * (en.y - st.y) <= 1200)
         {
+            GA(st, en);
             return;
         }
         else
@@ -80,7 +81,8 @@ public class MapCreate : MonoBehaviour
             mid.x = (st.x + en.x) / 2;
             mid.y = (st.y + en.y) / 2;
             Node nd1, nd2;
-            int random = UnityEngine.Random.Range(0,5);
+            int random = UnityEngine.Random.Range(0,7);
+            random -= 3;
             for(int i = st.x; i <= en.x; i++)
             {
                 for(int j = st.y; j <= en.y; j++)
@@ -91,7 +93,7 @@ public class MapCreate : MonoBehaviour
             }
             if (en.y - st.y > en.x- st.x)
             {
-                mid.y = mid.y + random - 2;
+                mid.y = mid.y + random;
                 for(int i = st.x; i <= en.x; i++)
                 {
                     Arr[i,mid.y] = 0;
@@ -108,7 +110,7 @@ public class MapCreate : MonoBehaviour
             }
             else
             {
-                mid.x = mid.x + random - 2;
+                mid.x = mid.x + random;
                 for (int i = st.y; i <= en.y; i++)
                 {
                     Arr[mid.x,i] = 0;
@@ -126,7 +128,70 @@ public class MapCreate : MonoBehaviour
         return;
     }
 
-   
+   void GA(Node st,Node en) 
+    {
+        int xrand = 0, yrand = 0;
+        int diff_len = en.x - 5 - st.x;
+        int forl = (5 * diff_len * 44) / 100;
+        for(int i =0; i <forl; i++)
+        {
+            while (true)
+            {
+                xrand = UnityEngine.Random.Range(0, diff_len);
+                yrand = UnityEngine.Random.Range(0, 5);
+                if (Arr[st.x + xrand, st.y + yrand] == 0) continue;
+                else
+                {
+                    Arr[st.x + xrand, st.y + yrand] = 0;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < forl; i++)
+        {
+            while (true)
+            {   
+                xrand = UnityEngine.Random.Range(0, diff_len);
+                yrand = UnityEngine.Random.Range(0, 5);
+                if (Arr[st.x + 5 + xrand, en.y - 5 + yrand] == 0) continue;
+                else
+                {
+                    Arr[st.x + 5 + xrand, en.y - 5 + yrand] = 0;
+                    break;
+                }
+            }
+        }
+        diff_len = en.y - 5 - st.y;
+        forl = (5 * diff_len * 44) / 100;
+        for (int i = 0; i < forl; i++)
+        {
+            while (true)
+            {
+                xrand = UnityEngine.Random.Range(0, 5);
+                yrand = UnityEngine.Random.Range(0, diff_len);
+                if (Arr[en.x - 5 + xrand, st.y + yrand] == 0) continue;
+                else
+                {
+                    Arr[en.x - 5 + xrand, st.y + yrand] = 0;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < forl; i++)
+        {
+            while (true)
+            {
+                xrand = UnityEngine.Random.Range(0, 5);
+                yrand = UnityEngine.Random.Range(0, diff_len);
+                if (Arr[st.x + xrand, st.y + 5 + yrand] == 0) continue;
+                else
+                {
+                    Arr[st.x + xrand, st.y + 5 + yrand] = 0;
+                    break;
+                }
+            }
+        }
+    }
 
     void DrawTile()
     {
