@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+
 struct Node
 {
     public int x, y;
    // public int X { get => x; set => x = value; }
    // public int Y { get => y; set => y = value; }
 }
+
 public class MapCreate : MonoBehaviour
 {
     public int mapX;
@@ -62,6 +64,7 @@ public class MapCreate : MonoBehaviour
         b.x = mapX - 1;
         b.y = mapY - 1;
         BSP(a, b);
+        for (int i = 0; i < 4; i++) Cellular_Automata(a, b);
         SquareWall();
         DrawTile();
         PlayerInstantiate();
@@ -72,7 +75,7 @@ public class MapCreate : MonoBehaviour
     {
         if ((en.x - st.x) * (en.y - st.y) <= 1200)
         {
-            GA(st, en);
+            Create_Noise(st, en);
             return;
         }
         else
@@ -128,11 +131,13 @@ public class MapCreate : MonoBehaviour
         return;
     }
 
-   void GA(Node st,Node en) 
+   void Create_Noise(Node st,Node en) 
     {
+        int CAper = 52;
+        //Debug.Log(CAper);
         int xrand = 0, yrand = 0;
         int diff_len = en.x - 5 - st.x;
-        int forl = (5 * diff_len * 44) / 100;
+        int forl = (5 * diff_len * CAper) / 100;
         for(int i =0; i <forl; i++)
         {
             while (true)
@@ -162,7 +167,7 @@ public class MapCreate : MonoBehaviour
             }
         }
         diff_len = en.y - 5 - st.y;
-        forl = (5 * diff_len * 44) / 100;
+        forl = (5 * diff_len * CAper) / 100;
         for (int i = 0; i < forl; i++)
         {
             while (true)
@@ -191,6 +196,49 @@ public class MapCreate : MonoBehaviour
                 }
             }
         }
+    }
+    void Cellular_Automata(Node st,Node en)
+    {
+        int[] dx = { 1, 1, 1, 0, 0, 0, -1, -1, -1 };
+        int[] dy = { 1, 0, -1, 1, 0, -1, 1, 0, -1 };
+        int z_cnt = 0;
+        for (int i = st.x; i <= en.x; i++)
+        {
+            for (int j = st.y; j <= en.y; j++)
+            {
+                z_cnt = 0;
+                for (int xcnt = 0; xcnt < 9; xcnt++)
+                {
+                    if(i+dx[xcnt]<st.x || i + dx[xcnt] > en.x|| j + dy[xcnt] < st.y || j + dy[xcnt] > en.y)
+                    {
+                        continue;
+                    }
+                    if (Arr[i + dx[xcnt], j + dy[xcnt]] == 0) z_cnt++;
+                }
+                if (z_cnt > 4)
+                {
+                    Copy[i, j] = 0;
+                }
+
+                else
+                {
+                    if (Copy[i, j] == 99)
+                    { }
+                    else
+                    {
+                        Copy[i, j] = 1;
+                    }
+                }
+            }
+        }
+        for (int i = st.x; i <= en.x; i++)
+        {
+            for (int j = st.y; j <= en.y; j++)
+            {
+                Arr[i, j] = Copy[i, j];
+            }
+        }
+
     }
 
     void DrawTile()
