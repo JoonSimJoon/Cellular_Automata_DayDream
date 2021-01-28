@@ -10,7 +10,11 @@ struct Node
    // public int X { get => x; set => x = value; }
    // public int Y { get => y; set => y = value; }
 }
-
+struct BspNd
+{
+    public Node nd;
+    public int randval;
+}
 public class MapCreate : MonoBehaviour
 {
     public int mapX;
@@ -75,7 +79,7 @@ public class MapCreate : MonoBehaviour
     {
         if ((en.x - st.x) * (en.y - st.y) <= 1200)
         {
-            Create_Noise(st, en);
+            Create_Noise_2(st, en);
             return;
         }
         else
@@ -131,7 +135,7 @@ public class MapCreate : MonoBehaviour
         return;
     }
 
-   void Create_Noise(Node st,Node en) 
+   void Create_Noise_1(Node st,Node en) 
     {
         int CAper = 52;
         //Debug.Log(CAper);
@@ -196,6 +200,95 @@ public class MapCreate : MonoBehaviour
                 }
             }
         }
+    }
+    void Create_Noise_2(Node St, Node En)
+    {
+        List < BspNd> bsplist = new List<BspNd>();
+        Node st = St;
+        Node en = En;
+
+
+        int CAper = 33;
+        int len = 1;
+       // while (CAper > 0)
+        {
+            Debug.Log(CAper);
+            int colorA = 0, colorB = 1;
+            if (CAper > 50)
+            {
+                colorA = 1;
+                colorB = 0;
+                CAper = 100 - CAper;
+            }
+            int xrand = 0, yrand = 0;
+            int diff_len = en.x - len - st.x;
+            int forl = (len * diff_len * CAper) / 100;
+            for (int i = 0; i < forl; i++)
+            {
+                while (true)
+                {
+                    xrand = UnityEngine.Random.Range(0, diff_len);
+                    yrand = UnityEngine.Random.Range(0, len);
+                    if (Arr[st.x + xrand, st.y + yrand] == colorA) continue;
+                    else
+                    {
+                        Arr[st.x + xrand, st.y + yrand] = colorA;
+                        break;
+                    }
+                }
+            }
+            for (int i = 0; i < forl; i++)
+            {
+                while (true)
+                {
+                    xrand = UnityEngine.Random.Range(0, diff_len);
+                    yrand = UnityEngine.Random.Range(0, len);
+                    if (Arr[st.x + len + xrand, en.y - len + yrand] == colorA) continue;
+                    else
+                    {
+                        Arr[st.x + len + xrand, en.y - len + yrand] = colorA;
+                        break;
+                    }
+                }
+            }
+            diff_len = en.y - 5 - st.y;
+            forl = (len * diff_len * CAper) / 100;
+            for (int i = 0; i < forl; i++)
+            {
+                while (true)
+                {
+                    xrand = UnityEngine.Random.Range(0, len);
+                    yrand = UnityEngine.Random.Range(0, diff_len);
+                    if (Arr[en.x - len + xrand, st.y + yrand] == colorA) continue;
+                    else
+                    {
+                        Arr[en.x - len + xrand, st.y + yrand] = colorA;
+                        break;
+                    }
+                }
+            }
+            for (int i = 0; i < forl; i++)
+            {
+                while (true)
+                {
+                    xrand = UnityEngine.Random.Range(0, len);
+                    yrand = UnityEngine.Random.Range(0, diff_len);
+                    if (Arr[st.x + xrand, st.y + len + yrand] == colorA) continue;
+                    else
+                    {
+                        Arr[st.x + xrand, st.y + len + yrand] = colorA;
+                        break;
+                    }
+                }
+            }
+            CAper -= 15;
+            //len++;
+            st.x++;
+            st.y++;
+            en.x--;
+            en.y--;
+        }
+      
     }
     void Cellular_Automata(Node st,Node en)
     {
