@@ -68,7 +68,7 @@ public class MapCreate : MonoBehaviour
         b.x = mapX - 1;
         b.y = mapY - 1;
         BSP(a, b);
-        for (int i = 0; i < 4; i++) Cellular_Automata(a, b);
+        for (int i = 0; i < 3; i++) Cellular_Automata(a, b);
         SquareWall();
         DrawTile();
         PlayerInstantiate();
@@ -207,123 +207,129 @@ public class MapCreate : MonoBehaviour
         Node st = St;
         Node en = En;
         BspNd nd;
-        int CAper = 62;
-        int len = 3;
-        int colorA = 0, colorB = 1;
-        int diff_len = en.x - len - st.x;
-        int ndl;
-        int forl = (len * diff_len * CAper) / 100;
-        //좌측하단 가로
-        for (int i = st.x ; i < en.x - len; i++) //무작위 배열 만듬
+        int CAper = 81;
+        int cnt = 0;
+        while (cnt < 6)
         {
-            for (int j = st.y + 1; j <= st.y + len; j++)
-            {
-                nd.nd.x = i;
-                nd.nd.y = j;
-                nd.randval = UnityEngine.Random.Range(0, len * diff_len);
-                bsplist.Add(nd);
-            }
-        }
-        bsplist.Sort(delegate (BspNd first, BspNd second)
-        {
-            if (first.randval < second.randval) return 1;
-            else if (first.randval > second.randval) return -1;
-            else return 0;
-        });
-        ndl = bsplist.Count;
-        for (int i = 0; i < forl; i++)
-        {
-            Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
-            //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
+            int len = 1;
+            int colorA = 0, colorB = 1;
+            int diff_len = en.x - len - st.x - 1;
+            int ndl;
+            int forl = (len * diff_len * CAper) / 100;
 
-        }
-        //우측 상단 가로
-        bsplist = new List<BspNd>();
-        for (int i = st.x + len+1; i < en.x+1; i++) //무작위 배열 만듬
-        {
-            for (int j = en.y - len; j < en.y; j++)
-            {
-                nd.nd.x = i;
-                nd.nd.y = j;
-                nd.randval = UnityEngine.Random.Range(0, len * diff_len);
-                bsplist.Add(nd);
-            }
-        }
-        bsplist.Sort(delegate (BspNd first, BspNd second)
-        {
-            if (first.randval < second.randval) return 1;
-            else if (first.randval > second.randval) return -1;
-            else return 0;
-        });
-        ndl = bsplist.Count;
-        for (int i = 0; i < forl; i++)
-        {
-            Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
-            //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
-        }
-        //우측 하단 세로
-        bsplist = new List<BspNd>();
-        diff_len = en.y - len - st.y;
-        forl = (len * diff_len * CAper) / 100;
-        for (int i = en.x - len; i < en.x; i++) //무작위 배열 만듬
-        {
-            for (int j = st.y; j <= en.y - len - 1; j++)
-            {
-                nd.nd.x = i;
-                nd.nd.y = j;
-                nd.randval = UnityEngine.Random.Range(0, len * diff_len);
-                bsplist.Add(nd);
-            }
-        }
-        bsplist.Sort(delegate (BspNd first, BspNd second)
-        {
-            if (first.randval < second.randval) return 1;
-            else if (first.randval > second.randval) return -1;
-            else return 0;
-        });
-        ndl = bsplist.Count;
-        for (int i = 0; i < forl; i++)
-        {
-            Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
-            //   Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
-        }
-        //좌측 상단 세로
-        bsplist = new List<BspNd>();
-        diff_len = en.y - len - st.y;
-        forl = (len * diff_len * CAper) / 100;
-        for (int i = st.x + 1; i <= st.x + len; i++) //무작위 배열 만듬
-        {
-            for (int j = st.y + len + 1; j < en.y + 1; j++)
-            {
-                nd.nd.x = i;
-                nd.nd.y = j;
-                nd.randval = UnityEngine.Random.Range(0, len * diff_len);
 
-                bsplist.Add(nd);
+            //좌측하단 가로
+            for (int i = st.x + 1; i < en.x - len; i++) //무작위 배열 만듬
+            {
+                for (int j = st.y + 1; j <= st.y + len; j++)
+                {
+                    nd.nd.x = i;
+                    nd.nd.y = j;
+                    nd.randval = UnityEngine.Random.Range(0, len * diff_len);
+                    bsplist.Add(nd);
+                }
+            }
+            bsplist.Sort(delegate (BspNd first, BspNd second)
+            {
+                if (first.randval < second.randval) return 1;
+                else if (first.randval > second.randval) return -1;
+                else return 0;
+            });
+            ndl = bsplist.Count;
+            for (int i = 0; i < forl; i++)
+            {
+                Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
+                //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
 
             }
+            //우측 상단 가로
+            bsplist = new List<BspNd>();
+            for (int i = st.x + len + 1; i < en.x; i++) //무작위 배열 만듬
+            {
+                for (int j = en.y - len; j < en.y; j++)
+                {
+                    nd.nd.x = i;
+                    nd.nd.y = j;
+                    nd.randval = UnityEngine.Random.Range(0, len * diff_len);
+                    bsplist.Add(nd);
+                }
+            }
+            bsplist.Sort(delegate (BspNd first, BspNd second)
+            {
+                if (first.randval < second.randval) return 1;
+                else if (first.randval > second.randval) return -1;
+                else return 0;
+            });
+            ndl = bsplist.Count;
+            for (int i = 0; i < forl; i++)
+            {
+                Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
+                //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
+            }
+            //우측 하단 세로
+            bsplist = new List<BspNd>();
+            diff_len = en.y - len - st.y - 1;
+            forl = (len * diff_len * CAper) / 100;
+            for (int i = en.x - len; i < en.x; i++) //무작위 배열 만듬
+            {
+                for (int j = st.y + 1; j <= en.y - len - 1; j++)
+                {
+                    nd.nd.x = i;
+                    nd.nd.y = j;
+                    nd.randval = UnityEngine.Random.Range(0, len * diff_len);
+                    bsplist.Add(nd);
+                }
+            }
+            bsplist.Sort(delegate (BspNd first, BspNd second)
+            {
+                if (first.randval < second.randval) return 1;
+                else if (first.randval > second.randval) return -1;
+                else return 0;
+            });
+            ndl = bsplist.Count;
+            for (int i = 0; i < forl; i++)
+            {
+                Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
+                //   Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
+            }
+            //좌측 상단 세로
+            bsplist = new List<BspNd>();
+            diff_len = en.y - len - st.y - 1;
+            forl = (len * diff_len * CAper) / 100;
+            for (int i = st.x + 1; i <= st.x + len; i++) //무작위 배열 만듬
+            {
+                for (int j = st.y + len + 1; j < en.y; j++)
+                {
+                    nd.nd.x = i;
+                    nd.nd.y = j;
+                    nd.randval = UnityEngine.Random.Range(0, len * diff_len);
+
+                    bsplist.Add(nd);
+
+                }
+            }
+            bsplist.Sort(delegate (BspNd first, BspNd second)
+            {
+                if (first.randval < second.randval) return 1;
+                else if (first.randval > second.randval) return -1;
+                else return 0;
+            });
+            ndl = bsplist.Count;
+            for (int i = 0; i < forl; i++)
+            {
+                Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
+                //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
+            }
+            CAper -= 6;
+            st.x++;
+            st.y++;
+            en.x--;
+            en.y--;
+            cnt++;
         }
-        bsplist.Sort(delegate (BspNd first, BspNd second)
-        {
-            if (first.randval < second.randval) return 1;
-            else if (first.randval > second.randval) return -1;
-            else return 0;
-        });
-        ndl = bsplist.Count;
-        for (int i = 0; i < forl; i++)
-        {
-            Arr[bsplist[i].nd.x, bsplist[i].nd.y] = colorA;
-            //    Debug.Log(bsplist[i].nd.x + " " + bsplist[i].nd.y + " " + bsplist[i].randval);
-        }
 
 
 
-        //CAper -= 15;
-        //len++;
-        //st.x++;
-        //st.y++;
-        //en.x--;
-        //en.y--;
 
 
     }
