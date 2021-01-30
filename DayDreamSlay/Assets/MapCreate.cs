@@ -4,16 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-struct Node
+public struct Node
 {
     public int x, y;
    // public int X { get => x; set => x = value; }
    // public int Y { get => y; set => y = value; }
 }
-struct BspNd
+public struct BspNd
 {
     public Node nd;
     public int randval;
+}
+public struct PairNode
+{
+    public Node first;
+    public Node second;
 }
 public class MapCreate : MonoBehaviour
 {
@@ -34,12 +39,15 @@ public class MapCreate : MonoBehaviour
     public TileBase[] groundTile = new TileBase[20];
     public TileBase HardwallTile;
     public TileBase sadariTile;
-    int componentcnt = 0;
+    public PairNode []BspTree = new PairNode[210];
+    public int componentcnt = 0;
+
     public  List<Vector2Int> v = new List<Vector2Int>();
     Queue<Vector2Int> q = new Queue<Vector2Int>();
     
     public int[,] Arr { get => arr; set => arr = value; }
     public int[,] Copy { get => arr; set => arr = value; }
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -67,19 +75,55 @@ public class MapCreate : MonoBehaviour
         Node b;
         b.x = mapX - 1;
         b.y = mapY - 1;
-        BSP(a, b);
-        for (int i = 0; i < 3; i++) Cellular_Automata(a, b);
+        BSP(a, b,1);
+        
+        for (int i = 2; i < 2 * componentcnt; i+=2)
+        {
+            Connect(BspTree[i], BspTree[i + 1]);
+        }
+        for (int i = 0; i < 50; i++) Cellular_Automata(a, b);
+
+
         SquareWall();
         DrawTile();
         PlayerInstantiate();
         //SpawnMonster();
     }
 
-    void BSP(Node st,Node en)
+    void BSP(Node st,Node en,int node_num)
     {
+        PairNode tmp;
+        tmp.first = st;
+        //tmp.first.y = st.y;
+        tmp.second = en;
+        //tmp.second.x = en.y;
+        BspTree[node_num] = tmp;
         if ((en.x - st.x) * (en.y - st.y) <= 1200)
         {
+            for(int i = st.x; i <= en.x; i++)
+            {
+                for(int j = st.y; j <= en.y; j++)
+                {
+                    Arr[i, j] = 0;
+                }
+            }
+            int ranle = UnityEngine.Random.Range(0, 3);
+            st.x += ranle;
+            ranle = UnityEngine.Random.Range(0, 3);
+            st.y += ranle;
+            ranle = UnityEngine.Random.Range(0, 3);
+            en.x -= ranle;
+            ranle = UnityEngine.Random.Range(0, 3);
+            en.y -= ranle;
+            for (int i = st.x+1; i <= en.x-1; i++)
+            {
+                for (int j = st.y+1; j <= en.y-1; j++)
+                {
+                    Arr[i, j] = 1;
+                }
+            }
             Create_Noise_2(st, en);
+            componentcnt++;
             return;
         }
         else
@@ -88,7 +132,7 @@ public class MapCreate : MonoBehaviour
             mid.x = (st.x + en.x) / 2;
             mid.y = (st.y + en.y) / 2;
             Node nd1, nd2;
-            int random = UnityEngine.Random.Range(0,7);
+            int random = UnityEngine.Random.Range(0,9);
             random -= 3;
             for(int i = st.x; i <= en.x; i++)
             {
@@ -108,14 +152,14 @@ public class MapCreate : MonoBehaviour
                 nd1 = st;
                 nd2.x = en.x;
                 nd2.y = mid.y;
-                BSP(nd1, nd2);
+                BSP(nd1, nd2,node_num*2);
                 nd1.x = st.x;
                 nd1.y = mid.y;
                 nd2 =en;
-                BSP(nd1, nd2);
+                BSP(nd1, nd2,node_num*2+1);
 
             }
-            else
+            else if (en.y - st.y < en.x - st.x)
             {
                 mid.x = mid.x + random;
                 for (int i = st.y; i <= en.y; i++)
@@ -125,11 +169,47 @@ public class MapCreate : MonoBehaviour
                 nd1 = st;
                 nd2.x = mid.x;
                 nd2.y = en.y;
-                BSP(nd1, nd2);
+                BSP(nd1, nd2,node_num*2);
                 nd1.x = mid.x;
                 nd1.y = st.y;
                 nd2 = en;
-                BSP(nd1, nd2);
+                BSP(nd1, nd2,node_num*2+1);
+            }
+            else
+            {
+                int casecheck = UnityEngine.Random.Range(0, 2);
+                if (casecheck == 0)
+                {
+                    mid.y = mid.y + random;
+                    for (int i = st.x; i <= en.x; i++)
+                    {
+                        Arr[i, mid.y] = 0;
+                    }
+                    nd1 = st;
+                    nd2.x = en.x;
+                    nd2.y = mid.y;
+                    BSP(nd1, nd2, node_num * 2);
+                    nd1.x = st.x;
+                    nd1.y = mid.y;
+                    nd2 = en;
+                    BSP(nd1, nd2, node_num * 2 + 1);
+                }
+                else
+                {
+                    mid.x = mid.x + random;
+                    for (int i = st.y; i <= en.y; i++)
+                    {
+                        Arr[mid.x, i] = 0;
+                    }
+                    nd1 = st;
+                    nd2.x = mid.x;
+                    nd2.y = en.y;
+                    BSP(nd1, nd2, node_num * 2);
+                    nd1.x = mid.x;
+                    nd1.y = st.y;
+                    nd2 = en;
+                    BSP(nd1, nd2, node_num * 2 + 1);
+                }
             }
         }
         return;
@@ -209,7 +289,7 @@ public class MapCreate : MonoBehaviour
         BspNd nd;
         int CAper = 81;
         int cnt = 0;
-        while (cnt < 6)
+        while (cnt < 8)
         {
             int len = 1;
             int colorA = 0, colorB = 1;
@@ -328,35 +408,34 @@ public class MapCreate : MonoBehaviour
             cnt++;
         }
 
-
-
-
-
     }
     void Cellular_Automata(Node st,Node en)
     {
         int[] dx = { 1, 1, 1, 0, 0, 0, -1, -1, -1 };
         int[] dy = { 1, 0, -1, 1, 0, -1, 1, 0, -1 };
         int z_cnt = 0;
+        int v_cnt = 0;
         for (int i = st.x; i <= en.x; i++)
         {
             for (int j = st.y; j <= en.y; j++)
             {
                 z_cnt = 0;
+                v_cnt = 0;
                 for (int xcnt = 0; xcnt < 9; xcnt++)
                 {
-                    if(i+dx[xcnt]<st.x || i + dx[xcnt] > en.x|| j + dy[xcnt] < st.y || j + dy[xcnt] > en.y)
+                    if (i + dx[xcnt] < st.x || i + dx[xcnt] > en.x || j + dy[xcnt] < st.y || j + dy[xcnt] > en.y)
                     {
                         continue;
                     }
+                    else v_cnt++;
                     if (Arr[i + dx[xcnt], j + dy[xcnt]] == 0) z_cnt++;
                 }
-                if (z_cnt > 4)
+                if (z_cnt > v_cnt/2)
                 {
                     Copy[i, j] = 0;
                 }
 
-                else
+                else if(z_cnt<v_cnt/2)
                 {
                     if (Copy[i, j] == 99)
                     { }
@@ -365,6 +444,7 @@ public class MapCreate : MonoBehaviour
                         Copy[i, j] = 1;
                     }
                 }
+                
             }
         }
         for (int i = st.x; i <= en.x; i++)
@@ -376,7 +456,22 @@ public class MapCreate : MonoBehaviour
         }
 
     }
-
+    void Connect(PairNode First,PairNode Second)
+    {
+        Node firstmid;
+        firstmid.x = (First.first.x + First.second.x) / 2;
+        firstmid.y = (First.first.y + First.second.y) / 2;
+        Node secondmid;
+        secondmid.x = (Second.first.x + Second.second.x) / 2;
+        secondmid.y = (Second.first.y + Second.second.y) / 2;
+        for(int i = firstmid.x - 1;i<= secondmid.x + 1; i++)
+        {
+            for(int j = firstmid.y - 1; j <= secondmid.y + 1; j++)
+            {
+                Arr[i, j] = 1;
+            }
+        }
+    }
     void DrawTile()
     {
         for (int i = 0; i < mapX; i++)
