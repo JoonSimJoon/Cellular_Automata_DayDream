@@ -81,13 +81,13 @@ public class MapCreate : MonoBehaviour
         {
             Connect(BspTree[i], BspTree[i + 1]);
         }
-        //for (int i = 0; i < 50; i++) Cellular_Automata(a, b);
+        for (int i = 0; i < 50; i++) Cellular_Automata(a, b);
 
 
         SquareWall();
         DrawTile();
         PlayerInstantiate();
-        //SpawnMonster();
+        SpawnMonster();
     }
 
     void BSP(Node st,Node en,int node_num)
